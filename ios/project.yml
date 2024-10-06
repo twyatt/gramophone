@@ -1,0 +1,37 @@
+name: QuickDictate
+options:
+  bundleIdPrefix: com.traviswyatt.qd
+  usesTabs: false
+  indentWidth: 4
+  defaultConfig: Debug
+packages:
+  KMP-NativeCoroutines:
+    url: https://github.com/rickclephas/KMP-NativeCoroutines.git
+    version: 1.0.0-ALPHA-34
+targets:
+  iOS:
+    type: application
+    platform: iOS
+    deploymentTarget: "15.0"
+    settings:
+      MARKETING_VERSION: 1
+      CURRENT_PROJECT_VERSION: 1
+      GENERATE_INFOPLIST_FILE: YES
+    info:
+      path: Info.plist
+      properties:
+        CFBundleDisplayName: "QuickDictate"
+        UILaunchScreen:
+          UIColorName: black
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationLandscapeRight
+        NSMicrophoneUsageDescription: Uses microphone for dictation (speech-to-text).
+    sources:
+      - path: Sources
+        buildPhase: sources
+      - path: Resources
+        buildPhase: resources
+    dependencies:
+      - framework: ../app/build/bin/iosArm64/debugFramework/ComposeApp.framework
+      - package: KMP-NativeCoroutines
+        product: KMPNativeCoroutinesAsync
