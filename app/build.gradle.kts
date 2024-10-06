@@ -29,11 +29,15 @@ kotlin {
             implementation(libs.bundles.voyager)
             implementation(libs.datetime)
             implementation(libs.khronicle)
+            implementation(libs.ktor.client)
+            implementation(libs.ktor.server)
         }
 
         androidMain.dependencies {
             implementation(libs.androidx.startup)
             implementation(libs.compose.activity)
+            implementation(libs.ktor.client.android)
+            implementation(libs.ktor.server.netty)
         }
     }
 }
@@ -47,7 +51,7 @@ android {
     sourceSets["main"].resources.srcDirs("src/commonMain/resources")
 
     defaultConfig {
-        applicationId = "com.juul.sensortag.android"
+        applicationId = "com.traviswyatt.qd"
         minSdk = libs.versions.android.min.get().toInt()
         targetSdk = libs.versions.android.target.get().toInt()
         versionCode = 1
@@ -56,6 +60,8 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "/META-INF/INDEX.LIST"
+            excludes += "/META-INF/*.properties"
         }
     }
     buildFeatures.compose = true

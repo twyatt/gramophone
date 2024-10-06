@@ -80,6 +80,7 @@ class AndroidDictation : Dictation {
     }
 
     override fun toggle() {
+        server.clear()
         if (_isDictating.value) {
             cancel()
         } else {
