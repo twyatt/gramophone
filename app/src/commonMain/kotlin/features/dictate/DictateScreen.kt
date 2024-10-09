@@ -34,6 +34,8 @@ import cafe.adriel.voyager.core.screen.Screen
 import com.traviswyatt.qd.AppTheme
 import com.traviswyatt.qd.wifiIpAddress
 
+private val FontSizeRange = 6f..240f
+
 class DictateScreen : Screen {
 
     @Composable
@@ -50,7 +52,7 @@ class DictateScreen : Screen {
                 val fontSize = remember { mutableStateOf(96f) }
                 val lineHeight = derivedStateOf { (fontSize.value * 1.1f).toInt() }
                 val transformState = rememberTransformableState { zoomChange, panChange, rotationChange ->
-                    fontSize.value *= zoomChange
+                    fontSize.value = (fontSize.value * zoomChange).coerceIn(FontSizeRange)
                 }
 
                 Box(
