@@ -23,8 +23,6 @@ targets:
         CFBundleDisplayName: "QuickDictate"
         UILaunchScreen:
           UIColorName: black
-        UISupportedInterfaceOrientations:
-          - UIInterfaceOrientationLandscapeRight
         NSMicrophoneUsageDescription: Uses microphone for dictation (speech-to-text).
     sources:
       - path: Sources
