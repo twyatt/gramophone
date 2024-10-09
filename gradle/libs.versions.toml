@@ -3,6 +3,7 @@ android-compile = "34"
 android-min = "33"
 android-target = "33"
 compose = "1.6.11"
+datastore = "1.1.1"
 jvm = "17"
 kotlin = "2.0.20"
 ktor = "3.0.0-rc-2"
@@ -12,6 +13,8 @@ voyager = "1.1.0-alpha03"
 androidx-startup = { module = "androidx.startup:startup-runtime", version = "1.2.0" }
 compose-activity = { module = "androidx.activity:activity-compose", version = "1.9.2" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version = "1.9.0" }
+datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
+datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.6.1" }
 khronicle = { module = "com.juul.khronicle:khronicle-core", version = "0.3.0" }
 ktor-client = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
@@ -23,6 +26,10 @@ voyager-screenmodel = { module = "cafe.adriel.voyager:voyager-screenmodel", vers
 voyager-transitions = { module = "cafe.adriel.voyager:voyager-transitions", version.ref = "voyager" }
 
 [bundles]
+datastore = [
+    "datastore",
+    "datastore-preferences",
+]
 voyager = [
     "voyager-navigator",
     "voyager-screenmodel",

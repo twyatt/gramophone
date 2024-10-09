@@ -26,6 +26,7 @@ kotlin {
             implementation(compose.material)
             implementation(compose.runtime)
             implementation(compose.ui)
+            implementation(libs.bundles.datastore)
             implementation(libs.bundles.voyager)
             implementation(libs.datetime)
             implementation(libs.khronicle)
