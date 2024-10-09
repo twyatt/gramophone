@@ -15,19 +15,18 @@ kotlin {
             binaryOption("bundleId", "com.traviswyatt.qd")
             binaryOption("bundleShortVersionString", "0.0.1")
             binaryOption("bundleVersion", "1")
-            export(libs.coroutines.core)
         }
     }
 
     sourceSets {
         commonMain.dependencies {
-            api(libs.coroutines.core)
             implementation(compose.foundation)
             implementation(compose.material)
             implementation(compose.runtime)
             implementation(compose.ui)
             implementation(libs.bundles.datastore)
             implementation(libs.bundles.voyager)
+            implementation(libs.coroutines.core)
             implementation(libs.datetime)
             implementation(libs.khronicle)
             implementation(libs.ktor.client)
