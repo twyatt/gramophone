@@ -1,3 +1,5 @@
 package com.traviswyatt.qd
 
-actual fun Dictation(): Dictation = AppleDictation()
+import kotlinx.coroutines.CoroutineScope
+
+actual fun CoroutineScope.Dictation(): Dictation = AppleDictation(this)

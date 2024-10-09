@@ -11,11 +11,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 
 class DictateScreenModel : ScreenModel {
 
-    val dictation = Dictation()
+    val dictation = screenModelScope.Dictation()
 
     private val client = MutableStateFlow<Client?>(null)
 

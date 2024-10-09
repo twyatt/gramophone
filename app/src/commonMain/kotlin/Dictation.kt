@@ -1,5 +1,6 @@
 package com.traviswyatt.qd
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -12,4 +13,4 @@ interface Dictation {
     fun cancel()
 }
 
-expect fun Dictation(): Dictation
+expect fun CoroutineScope.Dictation(): Dictation

@@ -33,9 +33,15 @@ class AndroidDictation : Dictation {
             }
 
             override fun onRmsChanged(rmsdB: Float) {
+                Log.verbose {
+                    "SpeechRecognizer.RecognitionListener onRmsChanged rmsdB: $rmsdB"
+                }
             }
 
             override fun onBufferReceived(buffer: ByteArray?) {
+                Log.verbose {
+                    "SpeechRecognizer.RecognitionListener onBufferReceived buffer: $buffer"
+                }
             }
 
             override fun onEndOfSpeech() {
@@ -59,9 +65,15 @@ class AndroidDictation : Dictation {
             }
 
             override fun onPartialResults(partialResults: Bundle?) {
+                Log.verbose {
+                    "SpeechRecognizer.RecognitionListener onPartialResults partialResults: $partialResults"
+                }
             }
 
             override fun onEvent(eventType: Int, params: Bundle?) {
+                Log.verbose {
+                    "SpeechRecognizer.RecognitionListener onEvent eventType: $eventType, params: $params"
+                }
             }
         })
     }
