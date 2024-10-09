@@ -2,7 +2,6 @@ package com.traviswyatt.qd
 
 import android.content.Intent
 import android.os.Bundle
-import android.speech.RecognitionListener
 import android.speech.RecognizerIntent.ACTION_RECOGNIZE_SPEECH
 import android.speech.RecognizerIntent.EXTRA_LANGUAGE
 import android.speech.RecognizerIntent.EXTRA_LANGUAGE_MODEL
@@ -21,7 +20,7 @@ class AndroidDictation : Dictation {
     }
 
     private val recognizer = SpeechRecognizer.createSpeechRecognizer(applicationContext).apply {
-        setRecognitionListener(object : RecognitionListener {
+        setRecognitionListener(object : RecognitionListenerStub() {
             override fun onReadyForSpeech(params: Bundle?) {
                 Log.debug { "onReadyForSpeech" }
                 _isDictating.value = true
@@ -30,18 +29,6 @@ class AndroidDictation : Dictation {
             override fun onBeginningOfSpeech() {
                 Log.debug { "onBeginningOfSpeech" }
                 _isDictating.value = true
-            }
-
-            override fun onRmsChanged(rmsdB: Float) {
-                Log.verbose {
-                    "SpeechRecognizer.RecognitionListener onRmsChanged rmsdB: $rmsdB"
-                }
-            }
-
-            override fun onBufferReceived(buffer: ByteArray?) {
-                Log.verbose {
-                    "SpeechRecognizer.RecognitionListener onBufferReceived buffer: $buffer"
-                }
             }
 
             override fun onEndOfSpeech() {
@@ -61,18 +48,6 @@ class AndroidDictation : Dictation {
                     _transcript.value = transcript
                 } else {
                     Log.error { "Empty transcription results" }
-                }
-            }
-
-            override fun onPartialResults(partialResults: Bundle?) {
-                Log.verbose {
-                    "SpeechRecognizer.RecognitionListener onPartialResults partialResults: $partialResults"
-                }
-            }
-
-            override fun onEvent(eventType: Int, params: Bundle?) {
-                Log.verbose {
-                    "SpeechRecognizer.RecognitionListener onEvent eventType: $eventType, params: $params"
                 }
             }
         })
