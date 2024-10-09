@@ -4,6 +4,7 @@ import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.request.receiveText
 import io.ktor.server.response.respondText
+import io.ktor.server.routing.delete
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,6 +18,11 @@ class NettyServer : Server {
         routing {
             post("/") {
                 _incoming.value = call.receiveText()
+                call.respondText("OK")
+            }
+
+            delete("/") {
+                clear()
                 call.respondText("OK")
             }
         }

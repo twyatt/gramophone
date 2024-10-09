@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -54,6 +55,13 @@ class DictateScreenModel : ScreenModel {
                 }
             }
         }
+
+        dictation.isDictating
+            .filter { it }
+            .onEach {
+                client.value?.clear()
+            }
+            .launchIn(screenModelScope)
 
         dictation.transcript.onEach { text ->
             try {

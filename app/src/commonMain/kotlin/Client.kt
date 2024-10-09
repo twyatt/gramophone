@@ -2,6 +2,7 @@ package com.traviswyatt.qd
 
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.request.delete
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.URLProtocol.Companion.HTTP
@@ -25,6 +26,12 @@ class Client(remoteHost: String) {
             http.post {
                 setBody(text)
             }
+        }
+    }
+
+    fun clear() {
+        GlobalScope.launch {
+            http.delete {}
         }
     }
 }
