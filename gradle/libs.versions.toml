@@ -20,6 +20,7 @@ datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.6.1
 khronicle = { module = "com.juul.khronicle:khronicle-core", version = "0.3.0" }
 ktor-client = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
+ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-server = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
 ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor" }
 moko-permissions = { module = "dev.icerock.moko:permissions-compose", version = "0.18.0" }

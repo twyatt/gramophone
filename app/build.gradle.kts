@@ -42,6 +42,10 @@ kotlin {
             implementation(libs.ktor.client.android)
             implementation(libs.ktor.server.netty)
         }
+
+        appleMain.dependencies {
+            implementation(libs.ktor.client.darwin)
+        }
     }
 }
 
