@@ -5,9 +5,9 @@ class Commander(
 ) {
 
     fun handle(text: String): Boolean {
-        when (text.lowercase()) {
-            "dictation disable send" -> setTransmit(false)
-            "dictation enable send" -> setTransmit(true)
+        when (text.lowercase().command.also { println("command: '$it'") }) {
+            "disable send" -> setTransmit(false)
+            "enable send" -> setTransmit(true)
             else -> return false
         }
         return true
@@ -17,3 +17,10 @@ class Commander(
         settings.setTransmit(enabled)
     }
 }
+
+private val String.command: String?
+    get() = when {
+        startsWith("grandma phone") -> substringAfter("grandma phone").trimStart()
+        startsWith("gramophone") -> substringAfter("gramophone").trimStart()
+        else -> null
+    }
