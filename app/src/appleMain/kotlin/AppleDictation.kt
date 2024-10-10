@@ -28,7 +28,7 @@ import platform.darwin.NSObject
  * This should be long enough to not timeout while someone is speaking a long work, but not too long
  * that it feels like a long delay after someone is done speaking.
  */
-private val SpeechTimeout = 2.5.seconds
+private val SpeechTimeout = 5.seconds
 
 class AppleDictation(
     private val scope: CoroutineScope,
