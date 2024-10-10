@@ -1,6 +1,5 @@
 package com.traviswyatt.qd
 
-import android.content.Context
 import android.content.Context.WIFI_SERVICE
 import android.net.wifi.WifiManager
 import java.math.BigInteger

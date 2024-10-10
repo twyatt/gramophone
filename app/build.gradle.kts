@@ -24,6 +24,7 @@ kotlin {
             implementation(compose.material)
             implementation(compose.runtime)
             implementation(compose.ui)
+            implementation(libs.androidx.lifecycle)
             implementation(libs.bundles.datastore)
             implementation(libs.bundles.voyager)
             implementation(libs.coroutines.core)
@@ -31,6 +32,7 @@ kotlin {
             implementation(libs.khronicle)
             implementation(libs.ktor.client)
             implementation(libs.ktor.server)
+            implementation(libs.moko.permissions)
         }
 
         androidMain.dependencies {
