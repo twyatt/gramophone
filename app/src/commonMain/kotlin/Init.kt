@@ -2,7 +2,6 @@ package com.traviswyatt.qd
 
 import com.juul.khronicle.Log
 import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.currentCoroutineContext

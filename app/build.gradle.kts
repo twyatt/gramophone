@@ -33,6 +33,7 @@ kotlin {
             implementation(libs.ktor.client)
             implementation(libs.ktor.server)
             implementation(libs.moko.permissions)
+            implementation(libs.tuulbox.coroutines)
         }
 
         androidMain.dependencies {
