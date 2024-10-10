@@ -61,11 +61,12 @@ class HostFinder {
     }
 }
 
-suspend fun isReachable(address: String): Boolean =
-    try {
-        Log.verbose { "🔍 $address" }
+suspend fun isReachable(address: String): Boolean {
+    val client = Client(address)
+    Log.verbose { "🔍 $address" }
+    return try {
         withTimeout(IndentTimeout) {
-            Client(address).ident().also { response ->
+            client.ident().also { response ->
                 Log.debug { "🎉 $address: $response" }
             }
         } == SERVER_IDENT
@@ -76,6 +77,9 @@ suspend fun isReachable(address: String): Boolean =
         }
         Log.warn { "$status $address" }
         false
+    } finally {
+        client.cancel()
     }
+}
 
 

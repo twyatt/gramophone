@@ -8,6 +8,7 @@ import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.URLProtocol.Companion.HTTP
+import kotlinx.coroutines.cancel
 
 class Client(remoteHost: String) {
 
@@ -33,4 +34,8 @@ class Client(remoteHost: String) {
 
     suspend fun ident(): String =
         http.get("/ident").bodyAsText()
+
+    fun cancel() {
+        http.cancel()
+    }
 }
