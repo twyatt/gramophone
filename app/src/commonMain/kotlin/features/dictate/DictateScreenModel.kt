@@ -82,6 +82,8 @@ class DictateScreenModel(val permissionsController: PermissionsController) : Scr
      * screen where user may have granted needed permissions).
      */
     fun onResumed() {
+        transcript.compareAndSet("", "Welcome back!")
+
         screenModelScope.launch {
             when (isRequestingRecordPermission.value) {
                 // After requesting permission, onResume is triggered, so we reset the
