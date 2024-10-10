@@ -8,6 +8,7 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.SharingStarted.Companion.Eagerly
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterNot
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -21,13 +22,9 @@ val hostFinder = HostFinder()
 val settings = Settings(GlobalScope, appDataStore)
 
 val client = settings.host
-    .map { host ->
-        if (host == null || !isReachable(host)) {
-            null
-        } else {
-            Client(host)
-        }
-    }.stateIn(GlobalScope, Eagerly, null)
+    .filterNotNull()
+    .map(::Client)
+    .stateIn(GlobalScope, Eagerly, null)
 
 fun init() {
     GlobalScope.configureHost()
