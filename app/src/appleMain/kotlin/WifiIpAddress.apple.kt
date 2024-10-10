@@ -15,7 +15,7 @@ import platform.posix.AF_INET
 import platform.posix.sockaddr_in
 
 @OptIn(ExperimentalForeignApi::class)
-actual fun wifiIpAddress(): String? {
+actual fun getWifiIpAddress(): String? {
     memScoped {
         val ifaddr = allocPointerTo<ifaddrs>()
         if (getifaddrs(ifaddr.ptr) == -1) {

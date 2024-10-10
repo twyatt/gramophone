@@ -5,5 +5,7 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import okio.Path.Companion.toPath
 
-fun createAppDataStore(): DataStore<Preferences> =
+private fun createAppDataStore(): DataStore<Preferences> =
     PreferenceDataStoreFactory.createWithPath { appDataStorePath.toPath() }
+
+val appDataStore by lazy(::createAppDataStore)

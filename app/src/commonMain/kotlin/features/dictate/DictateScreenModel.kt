@@ -3,11 +3,11 @@ package com.traviswyatt.qd.features.dictate
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.juul.khronicle.Log
-import com.traviswyatt.qd.Client
 import com.traviswyatt.qd.Commander
 import com.traviswyatt.qd.Dictation
 import com.traviswyatt.qd.Settings
-import com.traviswyatt.qd.createAppDataStore
+import com.traviswyatt.qd.appDataStore
+import com.traviswyatt.qd.client
 import com.traviswyatt.qd.transcript
 import dev.icerock.moko.permissions.DeniedAlwaysException
 import dev.icerock.moko.permissions.DeniedException
@@ -36,14 +36,10 @@ private const val DefaultFontSize = 96f // sp
 
 class DictateScreenModel(val permissionsController: PermissionsController) : ScreenModel {
 
-    private val settings = Settings(GlobalScope, createAppDataStore())
+    private val settings = Settings(GlobalScope, appDataStore)
     val dictation = screenModelScope.Dictation(Commander(settings))
-    private val client = MutableStateFlow<Client?>(null)
 
     val permissionState = MutableStateFlow(NotDetermined)
-
-    private val _showIpDialog = MutableStateFlow(false)
-    val showIpDialog = _showIpDialog.asStateFlow()
 
     private val _fontSize = MutableStateFlow(DefaultFontSize)
     val fontSize = _fontSize.asStateFlow()
@@ -138,13 +134,6 @@ class DictateScreenModel(val permissionsController: PermissionsController) : Scr
         permissionState.value = permissionsController.requestPermission(RECORD_AUDIO)
     }
 
-    fun setServer(ipLastDigit: String) {
-        if (ipLastDigit.isNotEmpty()) {
-            client.value = Client("10.0.0.$ipLastDigit")
-        }
-        _showIpDialog.value = false
-    }
-
     fun onZoomChange(zoomChange: Float) {
         _fontSize.update { previous ->
             (previous * zoomChange).coerceIn(FontSizeRange)
@@ -153,10 +142,6 @@ class DictateScreenModel(val permissionsController: PermissionsController) : Scr
 
     override fun onDispose() {
         dictation.cancel()
-    }
-
-    fun setIp() {
-        _showIpDialog.value = true
     }
 }
 

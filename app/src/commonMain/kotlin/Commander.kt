@@ -1,15 +1,18 @@
 package com.traviswyatt.qd
 
+import com.juul.khronicle.Log
+
 class Commander(
     private val settings: Settings,
 ) {
 
     fun handle(text: String): Boolean {
-        when (text.lowercase().command.also { println("command: '$it'") }) {
+        when (text.lowercase().command) {
             "disable send" -> setTransmit(false)
             "enable send" -> setTransmit(true)
             else -> return false
         }
+        Log.info { "Handled command: $text" }
         return true
     }
 

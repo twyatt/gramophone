@@ -7,7 +7,7 @@ import java.net.InetAddress
 import java.net.UnknownHostException
 import java.nio.ByteOrder
 
-actual fun wifiIpAddress(): String? {
+actual fun getWifiIpAddress(): String? {
     val wifiManager = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
     val ipAddress = wifiManager.connectionInfo.ipAddress.let {
         if (ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN) {

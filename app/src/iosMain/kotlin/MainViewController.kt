@@ -5,6 +5,7 @@ import platform.UIKit.UIViewController
 
 fun MainViewController(): UIViewController {
     configureLogging()
+    init()
     return ComposeUIViewController {
         App()
     }
