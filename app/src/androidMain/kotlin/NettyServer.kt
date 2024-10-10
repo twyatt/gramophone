@@ -8,28 +8,21 @@ import io.ktor.server.routing.delete
 import io.ktor.server.routing.put
 import io.ktor.server.routing.routing
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 
-class NettyServer : Server {
+class NettyServer(private val transcript: MutableStateFlow<String>) : Server {
 
-    private val _incoming = MutableStateFlow<String?>(null)
-    override val incoming = _incoming.asStateFlow()
     private val http = embeddedServer(Netty, port = 8080) {
         routing {
             put("/") {
-                _incoming.value = call.receiveText()
+                transcript.value = call.receiveText()
                 call.respondText("OK")
             }
 
             delete("/") {
-                clear()
+                transcript.value = ""
                 call.respondText("OK")
             }
         }
-    }
-
-    override fun clear() {
-        _incoming.value = null
     }
 
     override fun start() {

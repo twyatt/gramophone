@@ -41,11 +41,11 @@ class AndroidDictation : Dictation {
             }
 
             override fun onResults(results: Bundle?) {
-                val transcript = results
+                val text = results
                     ?.getStringArrayList(RESULTS_RECOGNITION)
                     ?.firstOrNull()
-                if (transcript != null) {
-                    _transcript.value = transcript
+                if (text != null) {
+                    transcript.value = text
                 } else {
                     Log.error { "Empty transcription results" }
                 }
@@ -59,15 +59,11 @@ class AndroidDictation : Dictation {
     private val _isDictating = MutableStateFlow(false)
     override val isDictating = _isDictating.asStateFlow()
 
-    private val _transcript = MutableStateFlow("")
-    override val transcript = _transcript.asStateFlow()
-
     override fun start() {
         recognizer.startListening(intent)
     }
 
     override fun toggle() {
-        server.clear()
         if (_isDictating.value) {
             cancel()
         } else {

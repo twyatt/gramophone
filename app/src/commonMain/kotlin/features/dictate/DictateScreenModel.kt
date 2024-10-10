@@ -8,7 +8,7 @@ import com.juul.khronicle.Log
 import com.traviswyatt.qd.Client
 import com.traviswyatt.qd.Dictation
 import com.traviswyatt.qd.createAppDataStore
-import com.traviswyatt.qd.server
+import com.traviswyatt.qd.transcript
 import dev.icerock.moko.permissions.DeniedAlwaysException
 import dev.icerock.moko.permissions.DeniedException
 import dev.icerock.moko.permissions.Permission
@@ -22,7 +22,6 @@ import dev.icerock.moko.permissions.RequestCanceledException
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
@@ -71,24 +70,21 @@ class DictateScreenModel(val permissionsController: PermissionsController) : Scr
         dictation.isDictating
             .filter { it }
             .onEach {
-                client.value?.clear()
+                try {
+                    client.value?.clear()
+                } catch (e: Exception) {
+                    Log.error(e) { "Failed to clear" }
+                }
             }
             .launchIn(screenModelScope)
 
-        dictation.transcript.onEach { text ->
+        transcript.onEach { text ->
             try {
                 client.value?.send(text)
             } catch (e: Exception) {
                 Log.error(e) { "Failed to send: $text" }
             }
         }.launchIn(screenModelScope)
-    }
-
-    val transcript = combine(
-        dictation.transcript,
-        server.incoming,
-    ) { dictation, received ->
-        received ?: dictation
     }
 
     private val isRequestingRecordPermission = MutableStateFlow<Boolean?>(null)
@@ -120,7 +116,6 @@ class DictateScreenModel(val permissionsController: PermissionsController) : Scr
     }
 
     fun toggleDictation() {
-        server.clear()
         screenModelScope.launch {
             if (dictation.isDictating.first()) {
                 dictation.cancel()
@@ -131,6 +126,7 @@ class DictateScreenModel(val permissionsController: PermissionsController) : Scr
     }
 
     private suspend fun startDictation() {
+        transcript.value = ""
         if (permissionState.value == Granted) {
             dictation.start()
         } else {

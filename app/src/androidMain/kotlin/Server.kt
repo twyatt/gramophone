@@ -1,3 +1,5 @@
 package com.traviswyatt.qd
 
-actual fun Server(): Server = NettyServer()
+import kotlinx.coroutines.flow.MutableStateFlow
+
+actual fun Server(transcript: MutableStateFlow<String>): Server = NettyServer(transcript)

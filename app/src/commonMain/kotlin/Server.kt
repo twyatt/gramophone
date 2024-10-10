@@ -1,11 +1,9 @@
 package com.traviswyatt.qd
 
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 
 interface Server {
-    val incoming: StateFlow<String?>
-    fun clear()
     fun start()
 }
 
-expect fun Server(): Server
+expect fun Server(transcript: MutableStateFlow<String>): Server

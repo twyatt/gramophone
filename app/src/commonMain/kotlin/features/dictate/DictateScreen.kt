@@ -36,6 +36,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import com.traviswyatt.qd.AppTheme
 import com.traviswyatt.qd.features.components.ActionRequired
 import com.traviswyatt.qd.onLifecycleResumed
+import com.traviswyatt.qd.transcript
 import com.traviswyatt.qd.wifiIpAddress
 import dev.icerock.moko.permissions.PermissionState
 import dev.icerock.moko.permissions.PermissionState.Denied
@@ -93,7 +94,7 @@ private fun MicrophonePermissionsDenied(onShowAppSettingsClick: () -> Unit) {
 private fun Transcription(screenModel: DictateScreenModel) {
     val isAvailable by screenModel.dictation.isAvailable.collectAsState()
     val isDictating by screenModel.dictation.isDictating.collectAsState(false)
-    val transcript by screenModel.transcript.collectAsState("")
+    val transcript by transcript.collectAsState("")
 
     Box {
         val border = if (isDictating) Color.Green else Color.Transparent

@@ -35,7 +35,6 @@ class AppleDictation(private val scope: CoroutineScope) : Dictation {
     override val isAvailable = MutableStateFlow(false)
     private val task = MutableStateFlow<SFSpeechRecognitionTask?>(null)
     override val isDictating = task.map { it != null }
-    override val transcript = MutableStateFlow("")
 
     private val recognizer = SFSpeechRecognizer(NSLocale.currentLocale).apply {
         delegate = object : NSObject(), SFSpeechRecognizerDelegateProtocol {
