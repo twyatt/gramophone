@@ -1,17 +1,19 @@
 package com.traviswyatt.qd
 
+import io.ktor.server.engine.ApplicationEngine
+import io.ktor.server.engine.ApplicationEngineFactory
 import io.ktor.server.engine.embeddedServer
-import io.ktor.server.netty.Netty
 import io.ktor.server.request.receiveText
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.delete
 import io.ktor.server.routing.put
 import io.ktor.server.routing.routing
-import kotlinx.coroutines.flow.MutableStateFlow
 
-class NettyServer(private val transcript: MutableStateFlow<String>) : Server {
+class KtorServer<TEngine : ApplicationEngine, TConfiguration : ApplicationEngine.Configuration>(
+    engine: ApplicationEngineFactory<TEngine, TConfiguration>,
+) : Server {
 
-    private val http = embeddedServer(Netty, port = 8080) {
+    private val http = embeddedServer(engine, port = 8080) {
         routing {
             put("/") {
                 transcript.value = call.receiveText()

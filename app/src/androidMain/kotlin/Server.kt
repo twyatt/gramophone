@@ -1,5 +1,5 @@
 package com.traviswyatt.qd
 
-import kotlinx.coroutines.flow.MutableStateFlow
+import io.ktor.server.netty.Netty
 
-actual fun Server(transcript: MutableStateFlow<String>): Server = NettyServer(transcript)
+actual fun Server(): Server = KtorServer(Netty)

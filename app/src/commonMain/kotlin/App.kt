@@ -7,7 +7,7 @@ import com.traviswyatt.qd.features.dictate.DictateScreen
 import kotlinx.coroutines.flow.MutableStateFlow
 
 val transcript = MutableStateFlow("")
-val server = Server(transcript).apply(Server::start)
+val server = Server().apply(Server::start)
 
 @Composable
 fun App() {
