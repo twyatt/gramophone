@@ -12,4 +12,4 @@ interface Dictation {
     fun cancel()
 }
 
-expect fun CoroutineScope.Dictation(): Dictation
+expect fun CoroutineScope.Dictation(commander: Commander): Dictation

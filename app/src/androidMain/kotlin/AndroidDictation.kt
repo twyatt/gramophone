@@ -12,7 +12,7 @@ import com.juul.khronicle.Log
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class AndroidDictation : Dictation {
+class AndroidDictation(private val commander: Commander) : Dictation {
 
     private val intent = Intent(ACTION_RECOGNIZE_SPEECH).apply {
         putExtra(EXTRA_LANGUAGE_MODEL, LANGUAGE_MODEL_FREE_FORM)
@@ -45,7 +45,9 @@ class AndroidDictation : Dictation {
                     ?.getStringArrayList(RESULTS_RECOGNITION)
                     ?.firstOrNull()
                 if (text != null) {
-                    transcript.value = text
+                    if (!commander.handle(text)) {
+                        transcript.value = text
+                    }
                 } else {
                     Log.error { "Empty transcription results" }
                 }

@@ -30,7 +30,10 @@ import platform.darwin.NSObject
  */
 private val SpeechTimeout = 3.seconds
 
-class AppleDictation(private val scope: CoroutineScope) : Dictation {
+class AppleDictation(
+    private val scope: CoroutineScope,
+    private val commander: Commander,
+) : Dictation {
 
     override val isAvailable = MutableStateFlow(false)
     private val task = MutableStateFlow<SFSpeechRecognitionTask?>(null)
@@ -85,7 +88,9 @@ class AppleDictation(private val scope: CoroutineScope) : Dictation {
                 task.value = null
 
                 (transcription ?: lastTranscription)?.let {
-                    transcript.value = it
+                    if (!commander.handle(it)) {
+                        transcript.value = it
+                    }
                 }
             }
         }

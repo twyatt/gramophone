@@ -1,12 +1,12 @@
 package com.traviswyatt.qd.features.dictate
 
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.floatPreferencesKey
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.juul.khronicle.Log
 import com.traviswyatt.qd.Client
+import com.traviswyatt.qd.Commander
 import com.traviswyatt.qd.Dictation
+import com.traviswyatt.qd.Settings
 import com.traviswyatt.qd.createAppDataStore
 import com.traviswyatt.qd.transcript
 import dev.icerock.moko.permissions.DeniedAlwaysException
@@ -20,6 +20,7 @@ import dev.icerock.moko.permissions.PermissionState.NotDetermined
 import dev.icerock.moko.permissions.PermissionsController
 import dev.icerock.moko.permissions.RequestCanceledException
 import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
@@ -32,12 +33,11 @@ import kotlinx.coroutines.launch
 
 private val FontSizeRange = 6f..240f
 private const val DefaultFontSize = 96f // sp
-private val FontSizePreferenceKey = floatPreferencesKey("font_size")
 
 class DictateScreenModel(val permissionsController: PermissionsController) : ScreenModel {
 
-    private val dataStore = createAppDataStore()
-    val dictation = screenModelScope.Dictation()
+    private val settings = Settings(GlobalScope, createAppDataStore())
+    val dictation = screenModelScope.Dictation(Commander(settings))
     private val client = MutableStateFlow<Client?>(null)
 
     val permissionState = MutableStateFlow(NotDetermined)
@@ -50,20 +50,12 @@ class DictateScreenModel(val permissionsController: PermissionsController) : Scr
 
     init {
         screenModelScope.launch {
-            dataStore.data.first()[FontSizePreferenceKey]?.let { fontSize ->
+            settings.getFontSize()?.let { fontSize ->
                 _fontSize.value = fontSize
-                Log.debug {
-                    "Restored font size: $fontSize"
-                }
             }
 
             fontSize.debounce(1.seconds).collect { fontSize ->
-                dataStore.edit { preferences ->
-                    preferences[FontSizePreferenceKey] = fontSize
-                }
-                Log.debug {
-                    "Saved font size: $fontSize"
-                }
+                settings.saveFontSize(fontSize)
             }
         }
 
