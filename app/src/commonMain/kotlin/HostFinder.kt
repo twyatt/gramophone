@@ -16,7 +16,9 @@ object HostFinder {
 
     val isRunning = MutableStateFlow(false)
 
-    private val scanner = Scanner {}
+    private val scanner by lazy {
+        Scanner {}
+    }
 
     @OptIn(ExperimentalStdlibApi::class)
     suspend fun run() {

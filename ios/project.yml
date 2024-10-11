@@ -20,6 +20,7 @@ targets:
         UILaunchScreen:
           UIColorName: black
         NSMicrophoneUsageDescription: Uses microphone for dictation (speech-to-text).
+        NSBluetoothAlwaysUsageDescription: Uses bluetooth for finding dictation host.
     sources:
       - path: Sources
         buildPhase: sources
