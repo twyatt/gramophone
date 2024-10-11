@@ -2,7 +2,6 @@ package com.traviswyatt.qd.features.dictate
 
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
-import com.juul.khronicle.Log
 import com.traviswyatt.qd.Commander
 import com.traviswyatt.qd.Dictation
 import com.traviswyatt.qd.HostFinder
