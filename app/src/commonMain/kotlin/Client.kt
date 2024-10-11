@@ -1,12 +1,11 @@
 package com.traviswyatt.qd
 
+import com.juul.khronicle.Log
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.delete
-import io.ktor.client.request.get
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
-import io.ktor.client.statement.bodyAsText
 import io.ktor.http.URLProtocol.Companion.HTTP
 import kotlinx.coroutines.cancel
 
@@ -23,17 +22,22 @@ class Client(remoteHost: String) {
     }
 
     suspend fun send(text: String) {
-        http.put {
-            setBody(text)
+        try {
+            http.put {
+                setBody(text)
+            }
+        } catch (e: Exception) {
+            Log.error(e) { "Failed to send: $text" }
         }
     }
 
     suspend fun clear() {
-        http.delete {}
+        try {
+            http.delete {}
+        } catch (e: Exception) {
+            Log.error(e) { "Failed to clear" }
+        }
     }
-
-    suspend fun ident(): String =
-        http.get("/ident").bodyAsText()
 
     fun cancel() {
         http.cancel()

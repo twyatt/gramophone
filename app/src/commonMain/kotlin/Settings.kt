@@ -10,14 +10,12 @@ import com.juul.khronicle.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 private val FontSizePreferenceKey = floatPreferencesKey("font_size")
 private val HostPreferenceKey = stringPreferencesKey("host")
 private val IsHostPreferenceKey = booleanPreferencesKey("is_host")
-private val TransmitPreferenceKey = booleanPreferencesKey("transmit")
 
 class Settings(
     private val scope: CoroutineScope,
@@ -62,6 +60,15 @@ class Settings(
             Log.debug {
                 "Saved isHost: $isHost"
             }
+        }
+    }
+
+    fun reset() {
+        scope.launch {
+            dataStore.edit { preferences ->
+                preferences.clear()
+            }
+            transcript.value = "Reset complete"
         }
     }
 }

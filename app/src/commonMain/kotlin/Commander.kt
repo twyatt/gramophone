@@ -10,10 +10,15 @@ class Commander(
         when (text.lowercase().command) {
             "host" -> setIsHost(true)
             "client" -> setIsHost(false)
+            "reset" -> reset()
             else -> return false
         }
         Log.info { "Handled command: $text" }
         return true
+    }
+
+    private fun reset() {
+        settings.reset()
     }
 
     private fun setIsHost(enabled: Boolean) {

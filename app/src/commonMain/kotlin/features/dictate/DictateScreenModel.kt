@@ -12,7 +12,6 @@ import com.traviswyatt.qd.transcript
 import dev.icerock.moko.permissions.DeniedAlwaysException
 import dev.icerock.moko.permissions.DeniedException
 import dev.icerock.moko.permissions.Permission
-import dev.icerock.moko.permissions.Permission.BLUETOOTH_ADVERTISE
 import dev.icerock.moko.permissions.Permission.BLUETOOTH_SCAN
 import dev.icerock.moko.permissions.Permission.RECORD_AUDIO
 import dev.icerock.moko.permissions.PermissionState.Denied
@@ -32,7 +31,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -68,21 +66,11 @@ class DictateScreenModel(val permissionsController: PermissionsController) : Scr
 
         dictation.isDictating
             .filter { it }
-            .onEach {
-                try {
-                    client.value?.clear()
-                } catch (e: Exception) {
-                    Log.error(e) { "Failed to clear" }
-                }
-            }
+            .onEach { client.value?.clear() }
             .launchIn(screenModelScope)
 
         transcript.onEach { text ->
-            try {
-                client.value?.send(text)
-            } catch (e: Exception) {
-                Log.error(e) { "Failed to send: $text" }
-            }
+            client.value?.send(text)
         }.launchIn(screenModelScope)
     }
 
