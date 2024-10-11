@@ -53,16 +53,3 @@ private fun CoroutineScope.configureHost() = launch {
         }
     }
 }
-
-private fun CoroutineScope.clearTranscriptOnIdle() {
-    transcript
-        .filterNot { it.isNullOrEmpty() }
-        .debounce(2.minutes)
-        .onEach {
-            if (!settings.getTransmit()) {
-                Log.debug { "Clearing transcript" }
-                transcript.value = ""
-            }
-        }
-        .launchIn(this)
-}

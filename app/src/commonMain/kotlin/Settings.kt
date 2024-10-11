@@ -17,9 +17,6 @@ private val FontSizePreferenceKey = floatPreferencesKey("font_size")
 private val TransmitPreferenceKey = booleanPreferencesKey("transmit")
 private val HostPreferenceKey = stringPreferencesKey("host")
 
-private fun <T> Preferences.getOrDefault(key: Preferences.Key<T>, default: T): T =
-    get(key) ?: default
-
 class Settings(
     private val scope: CoroutineScope,
     private val dataStore: DataStore<Preferences>,
