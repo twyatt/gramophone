@@ -29,6 +29,7 @@ kotlin {
             implementation(libs.bundles.voyager)
             implementation(libs.coroutines.core)
             implementation(libs.datetime)
+            implementation(libs.kable)
             implementation(libs.khronicle)
             implementation(libs.ktor.client)
             implementation(libs.ktor.server)

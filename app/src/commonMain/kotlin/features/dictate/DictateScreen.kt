@@ -6,8 +6,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Button
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -16,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -24,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.model.rememberScreenModel
 import cafe.adriel.voyager.core.screen.Screen
 import com.traviswyatt.qd.AppTheme
+import com.traviswyatt.qd.HostFinder
 import com.traviswyatt.qd.features.components.ActionRequired
 import com.traviswyatt.qd.onLifecycleResumed
 import com.traviswyatt.qd.transcript
@@ -43,17 +49,26 @@ class DictateScreen : Screen {
         val screenModel = rememberScreenModel()
         onLifecycleResumed(screenModel::onResumed)
 
-        val recordPermissionState by screenModel.recordPermissionState.collectAsState()
-        val bluetoothPermissionState by screenModel.bluetoothPermissionState.collectAsState()
-
         AppTheme {
-            Box(Modifier.background(color = MaterialTheme.colors.background)) {
-                if (bluetoothPermissionState.canRequestPermission == false) {
-                    BluetoothPermissionsDenied(screenModel::openAppSettings)
+            Box(Modifier.background(color = MaterialTheme.colors.background).fillMaxSize()) {
+                val isSearchingForHost by HostFinder.isRunning.collectAsState()
+                if (isSearchingForHost) {
+                    CircularProgressIndicator(Modifier.align(Alignment.Center))
                 } else {
-                    when (recordPermissionState.canRequestPermission) {
-                        true, null -> Transcription(screenModel)
-                        false -> MicrophonePermissionsDenied(screenModel::openAppSettings)
+                    val needsHost by screenModel.needsHost.collectAsState(false)
+                    if (needsHost) {
+                        NeedsHost(screenModel::findHost)
+                    } else {
+                        val bluetoothPermissionState by screenModel.bluetoothPermissionState.collectAsState()
+                        if (bluetoothPermissionState.canRequestPermission == false) {
+                            BluetoothPermissionsDenied(screenModel::openAppSettings)
+                        } else {
+                            val recordPermissionState by screenModel.recordPermissionState.collectAsState()
+                            when (recordPermissionState.canRequestPermission) {
+                                true, null -> Transcription(screenModel)
+                                false -> MicrophonePermissionsDenied(screenModel::openAppSettings)
+                            }
+                        }
                     }
                 }
             }
@@ -69,6 +84,21 @@ class DictateScreen : Screen {
         }
         BindEffect(screenModel.permissionsController)
         return screenModel
+    }
+
+}
+
+@Composable
+private fun BoxScope.NeedsHost(onClick: () -> Unit) {
+    Column(
+        Modifier.align(Alignment.Center),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text("Not associated with host.")
+        Button(
+            onClick = onClick,
+            content = { Text("Search") },
+        )
     }
 }
 

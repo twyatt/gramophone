@@ -15,8 +15,6 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 
 private const val TAG = "Advertiser"
 
-private const val ServiceUuid = "7e04fdcb-59ad-4286-a6f1-46c09ecc0db7" // Random
-
 object Advertiser {
 
     private val advertiser: BluetoothLeAdvertiser = BluetoothAdapter

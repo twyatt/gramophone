@@ -5,14 +5,15 @@ import cafe.adriel.voyager.core.model.screenModelScope
 import com.juul.khronicle.Log
 import com.traviswyatt.qd.Commander
 import com.traviswyatt.qd.Dictation
-import com.traviswyatt.qd.Settings
-import com.traviswyatt.qd.appDataStore
+import com.traviswyatt.qd.HostFinder
 import com.traviswyatt.qd.client
+import com.traviswyatt.qd.settings
 import com.traviswyatt.qd.transcript
 import dev.icerock.moko.permissions.DeniedAlwaysException
 import dev.icerock.moko.permissions.DeniedException
 import dev.icerock.moko.permissions.Permission
 import dev.icerock.moko.permissions.Permission.BLUETOOTH_ADVERTISE
+import dev.icerock.moko.permissions.Permission.BLUETOOTH_SCAN
 import dev.icerock.moko.permissions.Permission.RECORD_AUDIO
 import dev.icerock.moko.permissions.PermissionState.Denied
 import dev.icerock.moko.permissions.PermissionState.DeniedAlways
@@ -21,14 +22,17 @@ import dev.icerock.moko.permissions.PermissionState.NotDetermined
 import dev.icerock.moko.permissions.PermissionsController
 import dev.icerock.moko.permissions.RequestCanceledException
 import kotlin.time.Duration.Companion.seconds
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -37,7 +41,6 @@ private const val DefaultFontSize = 96f // sp
 
 class DictateScreenModel(val permissionsController: PermissionsController) : ScreenModel {
 
-    private val settings = Settings(GlobalScope, appDataStore)
     val dictation = screenModelScope.Dictation(Commander(settings))
 
     val recordPermissionState = MutableStateFlow(NotDetermined)
@@ -46,9 +49,15 @@ class DictateScreenModel(val permissionsController: PermissionsController) : Scr
     private val _fontSize = MutableStateFlow(DefaultFontSize)
     val fontSize = _fontSize.asStateFlow()
 
+    val needsHost = combine(
+        settings.isHost.map { !it },
+        settings.host,
+    ) { isClient, host -> isClient && host == null }
+        .distinctUntilChanged()
+
     init {
         screenModelScope.launch {
-            settings.getFontSize()?.let { fontSize ->
+            settings.fontSize.first()?.let { fontSize ->
                 _fontSize.value = fontSize
             }
 
@@ -155,13 +164,26 @@ class DictateScreenModel(val permissionsController: PermissionsController) : Scr
         recordPermissionState.value = permissionsController.requestPermission(RECORD_AUDIO)
     }
 
+    fun findHost() {
+        screenModelScope.launch {
+            if (bluetoothPermissionState.value == Granted) {
+                HostFinder.run()
+            } else {
+                requestAndUpdateBluetoothPermission()
+                if (bluetoothPermissionState.value == Granted) {
+                    HostFinder.run()
+                }
+            }
+        }
+    }
+
     suspend fun requestAndUpdateBluetoothPermission() {
         // Once we've been granted permission we no longer need to request permission. Apple and
         // Android will kill the app if permissions are revoked.
         if (bluetoothPermissionState.value == Granted) return
 
         isRequestingBluetoothPermission.value = true
-        bluetoothPermissionState.value = permissionsController.requestPermission(BLUETOOTH_ADVERTISE)
+        bluetoothPermissionState.value = permissionsController.requestPermission(BLUETOOTH_SCAN)
     }
 
     fun onZoomChange(zoomChange: Float) {

@@ -10,21 +10,18 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.juul.khronicle.Log
 import com.traviswyatt.qd.bluetooth.Advertiser
-import kotlin.time.Duration.Companion.minutes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
-private val isAppBeingUsed = MutableStateFlow(false)
 val isAppForegrounded = MutableStateFlow(true)
 
 class MainActivity : ComponentActivity() {
@@ -36,14 +33,16 @@ class MainActivity : ComponentActivity() {
         configureLogging()
         GlobalScope.configureServer()
         GlobalScope.configureAdvertising()
+        GlobalScope.configureWakeLock()
         init()
+        setFullscreen()
 
-        transcript
-            .onEach { isAppBeingUsed.value = true }
-            .debounce(10.minutes)
-            .onEach { isAppBeingUsed.value = false }
-            .launchIn(GlobalScope)
+        setContent {
+            App()
+        }
+    }
 
+    private fun CoroutineScope.configureWakeLock() {
         combine(
             isCharging,
             isAppForegrounded,
@@ -60,17 +59,14 @@ class MainActivity : ComponentActivity() {
                 }
             }
             .flowOn(Dispatchers.Main)
-            .launchIn(GlobalScope)
+            .launchIn(this)
+    }
 
-        val windowInsetsController =
-            WindowCompat.getInsetsController(window, window.decorView)
+    private fun setFullscreen() {
+        val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
         windowInsetsController.systemBarsBehavior =
             WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
-
-        setContent {
-            App()
-        }
     }
 
 }

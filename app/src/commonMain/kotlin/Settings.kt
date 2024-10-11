@@ -28,12 +28,7 @@ class Settings(
         dataStore.data.map { it.getOrDefault(IsHostPreferenceKey, isTablet) }
             .distinctUntilChanged()
 
-    suspend fun getFontSize(): Float? =
-        dataStore.data.first()[FontSizePreferenceKey]?.also { fontSize ->
-            Log.debug {
-                "Restored font size: $fontSize"
-            }
-        }
+    val fontSize = dataStore.data.map { it[FontSizePreferenceKey] }
 
     fun saveFontSize(fontSize: Float) {
         scope.launch {
@@ -47,13 +42,6 @@ class Settings(
     }
 
     val host: Flow<String?> = dataStore.data.map { it[HostPreferenceKey] }
-
-    suspend fun getHost(): String? =
-        dataStore.data.first()[HostPreferenceKey]?.also { host ->
-            Log.debug {
-                "Restored host: $host"
-            }
-        }
 
     fun setHost(host: String) {
         scope.launch {

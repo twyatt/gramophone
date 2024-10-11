@@ -19,5 +19,6 @@ val client = combine(
     .stateIn(GlobalScope, Eagerly, null)
 
 fun init() {
+    GlobalScope.configureIdleDetection()
     GlobalScope.clearTranscriptOnIdle()
 }
