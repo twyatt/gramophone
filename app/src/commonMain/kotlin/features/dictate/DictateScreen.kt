@@ -8,7 +8,6 @@ import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -17,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment.Companion.TopEnd
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -27,7 +25,6 @@ import cafe.adriel.voyager.core.model.rememberScreenModel
 import cafe.adriel.voyager.core.screen.Screen
 import com.traviswyatt.qd.AppTheme
 import com.traviswyatt.qd.features.components.ActionRequired
-import com.traviswyatt.qd.hostFinder
 import com.traviswyatt.qd.onLifecycleResumed
 import com.traviswyatt.qd.transcript
 import dev.icerock.moko.permissions.PermissionState
@@ -46,13 +43,18 @@ class DictateScreen : Screen {
         val screenModel = rememberScreenModel()
         onLifecycleResumed(screenModel::onResumed)
 
-        val permissionState by screenModel.permissionState.collectAsState()
+        val recordPermissionState by screenModel.recordPermissionState.collectAsState()
+        val bluetoothPermissionState by screenModel.bluetoothPermissionState.collectAsState()
 
         AppTheme {
             Box(Modifier.background(color = MaterialTheme.colors.background)) {
-                when (permissionState.canRequestPermission) {
-                    true, null -> Transcription(screenModel)
-                    false -> MicrophonePermissionsDenied(screenModel::openAppSettings)
+                if (bluetoothPermissionState.canRequestPermission == false) {
+                    BluetoothPermissionsDenied(screenModel::openAppSettings)
+                } else {
+                    when (recordPermissionState.canRequestPermission) {
+                        true, null -> Transcription(screenModel)
+                        false -> MicrophonePermissionsDenied(screenModel::openAppSettings)
+                    }
                 }
             }
         }
@@ -68,7 +70,6 @@ class DictateScreen : Screen {
         BindEffect(screenModel.permissionsController)
         return screenModel
     }
-
 }
 
 @Composable
@@ -77,6 +78,17 @@ private fun MicrophonePermissionsDenied(onShowAppSettingsClick: () -> Unit) {
         icon = Icons.Filled.Warning,
         contentDescription = "Microphone permissions required",
         description = "Microphone permissions are required for dictation. Please grant the permission.",
+        buttonText = "Open Settings",
+        onClick = onShowAppSettingsClick,
+    )
+}
+
+@Composable
+private fun BluetoothPermissionsDenied(onShowAppSettingsClick: () -> Unit) {
+    ActionRequired(
+        icon = Icons.Filled.Warning,
+        contentDescription = "Bluetooth permissions required",
+        description = "Bluetooth permissions are required for communicating with dictation host. Please grant the permission.",
         buttonText = "Open Settings",
         onClick = onShowAppSettingsClick,
     )
@@ -115,10 +127,10 @@ private fun Transcription(screenModel: DictateScreenModel) {
             Text(message, fontSize = fontSize.value.toInt().sp, lineHeight = lineHeight.value.sp, fontWeight = FontWeight.Bold)
         }
 
-        val isSearching by hostFinder.isSearching.collectAsState()
-        if (isSearching) {
-            CircularProgressIndicator(Modifier.align(TopEnd).padding(5.dp))
-        }
+//        val isSearching by hostFinder.isSearching.collectAsState()
+//        if (isSearching) {
+//            CircularProgressIndicator(Modifier.align(TopEnd).padding(5.dp))
+//        }
     }
 }
 

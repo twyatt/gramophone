@@ -37,6 +37,8 @@ kotlin {
         }
 
         androidMain.dependencies {
+            implementation(libs.androidx.lifecycle)
+            implementation(libs.androidx.lifecycle.process)
             implementation(libs.androidx.startup)
             implementation(libs.compose.activity)
             implementation(libs.ktor.client.android)

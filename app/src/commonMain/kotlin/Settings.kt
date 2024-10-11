@@ -9,37 +9,24 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.juul.khronicle.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 private val FontSizePreferenceKey = floatPreferencesKey("font_size")
-private val TransmitPreferenceKey = booleanPreferencesKey("transmit")
 private val HostPreferenceKey = stringPreferencesKey("host")
+private val IsHostPreferenceKey = booleanPreferencesKey("is_host")
+private val TransmitPreferenceKey = booleanPreferencesKey("transmit")
 
 class Settings(
     private val scope: CoroutineScope,
     private val dataStore: DataStore<Preferences>,
 ) {
 
-    val transmit: Flow<Boolean> =
-        dataStore.data.map { it.getOrDefault(TransmitPreferenceKey, isPhone) }
-
-    suspend fun getTransmit(): Boolean =
-        dataStore.data.first().getOrDefault(TransmitPreferenceKey, isPhone).also { transmit ->
-            Log.debug {
-                "Restored transmit: $transmit"
-            }
-        }
-
-    fun setTransmit(enabled: Boolean) {
-        Log.info { "Set transmit: $enabled" }
-        scope.launch {
-            dataStore.edit { preferences ->
-                preferences[TransmitPreferenceKey] = enabled
-            }
-        }
-    }
+    val isHost: Flow<Boolean> =
+        dataStore.data.map { it.getOrDefault(IsHostPreferenceKey, isTablet) }
+            .distinctUntilChanged()
 
     suspend fun getFontSize(): Float? =
         dataStore.data.first()[FontSizePreferenceKey]?.also { fontSize ->
@@ -75,6 +62,17 @@ class Settings(
             }
             Log.debug {
                 "Saved host: $host"
+            }
+        }
+    }
+
+    fun setIsHost(isHost: Boolean) {
+        scope.launch {
+            dataStore.edit { preferences ->
+                preferences[IsHostPreferenceKey] = isHost
+            }
+            Log.debug {
+                "Saved isHost: $isHost"
             }
         }
     }

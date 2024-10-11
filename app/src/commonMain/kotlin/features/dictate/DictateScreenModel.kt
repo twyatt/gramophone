@@ -12,6 +12,7 @@ import com.traviswyatt.qd.transcript
 import dev.icerock.moko.permissions.DeniedAlwaysException
 import dev.icerock.moko.permissions.DeniedException
 import dev.icerock.moko.permissions.Permission
+import dev.icerock.moko.permissions.Permission.BLUETOOTH_ADVERTISE
 import dev.icerock.moko.permissions.Permission.RECORD_AUDIO
 import dev.icerock.moko.permissions.PermissionState.Denied
 import dev.icerock.moko.permissions.PermissionState.DeniedAlways
@@ -39,7 +40,8 @@ class DictateScreenModel(val permissionsController: PermissionsController) : Scr
     private val settings = Settings(GlobalScope, appDataStore)
     val dictation = screenModelScope.Dictation(Commander(settings))
 
-    val permissionState = MutableStateFlow(NotDetermined)
+    val recordPermissionState = MutableStateFlow(NotDetermined)
+    val bluetoothPermissionState = MutableStateFlow(NotDetermined)
 
     private val _fontSize = MutableStateFlow(DefaultFontSize)
     val fontSize = _fontSize.asStateFlow()
@@ -76,6 +78,7 @@ class DictateScreenModel(val permissionsController: PermissionsController) : Scr
     }
 
     private val isRequestingRecordPermission = MutableStateFlow<Boolean?>(null)
+    private val isRequestingBluetoothPermission = MutableStateFlow<Boolean?>(null)
 
     /**
      * Re-check permissions when screen resumes (can occur after coming back from app settings
@@ -91,6 +94,22 @@ class DictateScreenModel(val permissionsController: PermissionsController) : Scr
                 true -> isRequestingRecordPermission.value = false
 
                 false -> requestAndUpdateRecordPermission()
+
+                // On Apple (until authorized) even checking the permission state will show a
+                // permission dialog. We guard against showing the dialog prior to actually wanting
+                // to request the permission by only checking permission after we've explicitly
+                // requested permission.
+                null -> {} // No-op
+            }
+        }
+
+        screenModelScope.launch {
+            when (isRequestingBluetoothPermission.value) {
+                // After requesting permission, onResume is triggered, so we reset the
+                // "is requesting" state here.
+                true -> isRequestingBluetoothPermission.value = false
+
+                false -> requestAndUpdateBluetoothPermission()
 
                 // On Apple (until authorized) even checking the permission state will show a
                 // permission dialog. We guard against showing the dialog prior to actually wanting
@@ -117,11 +136,11 @@ class DictateScreenModel(val permissionsController: PermissionsController) : Scr
 
     private suspend fun startDictation() {
         transcript.value = ""
-        if (permissionState.value == Granted) {
+        if (recordPermissionState.value == Granted) {
             dictation.start()
         } else {
             requestAndUpdateRecordPermission()
-            if (permissionState.value == Granted) {
+            if (recordPermissionState.value == Granted) {
                 dictation.start()
             }
         }
@@ -130,10 +149,19 @@ class DictateScreenModel(val permissionsController: PermissionsController) : Scr
     private suspend fun requestAndUpdateRecordPermission() {
         // Once we've been granted permission we no longer need to request permission. Apple and
         // Android will kill the app if permissions are revoked.
-        if (permissionState.value == Granted) return
+        if (recordPermissionState.value == Granted) return
 
         isRequestingRecordPermission.value = true
-        permissionState.value = permissionsController.requestPermission(RECORD_AUDIO)
+        recordPermissionState.value = permissionsController.requestPermission(RECORD_AUDIO)
+    }
+
+    suspend fun requestAndUpdateBluetoothPermission() {
+        // Once we've been granted permission we no longer need to request permission. Apple and
+        // Android will kill the app if permissions are revoked.
+        if (bluetoothPermissionState.value == Granted) return
+
+        isRequestingBluetoothPermission.value = true
+        bluetoothPermissionState.value = permissionsController.requestPermission(BLUETOOTH_ADVERTISE)
     }
 
     fun onZoomChange(zoomChange: Float) {

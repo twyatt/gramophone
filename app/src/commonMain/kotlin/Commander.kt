@@ -8,16 +8,16 @@ class Commander(
 
     fun handle(text: String): Boolean {
         when (text.lowercase().command) {
-            "disable send" -> setTransmit(false)
-            "enable send" -> setTransmit(true)
+            "host" -> setIsHost(true)
+            "client" -> setIsHost(false)
             else -> return false
         }
         Log.info { "Handled command: $text" }
         return true
     }
 
-    private fun setTransmit(enabled: Boolean) {
-        settings.setTransmit(enabled)
+    private fun setIsHost(enabled: Boolean) {
+        settings.setIsHost(enabled)
     }
 }
 

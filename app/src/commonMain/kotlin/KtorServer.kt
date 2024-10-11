@@ -11,11 +11,14 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.put
 import io.ktor.server.routing.routing
 
+private const val TAG = "KtorServer"
+private const val SERVER_IDENT = "gramophone"
+
 class KtorServer<TEngine : ApplicationEngine, TConfiguration : ApplicationEngine.Configuration>(
     engine: ApplicationEngineFactory<TEngine, TConfiguration>,
 ) : Server {
 
-    private val http = embeddedServer(engine, port = 8080) {
+    private val server = embeddedServer(engine, port = 8080) {
         routing {
             get("/ident") {
                 call.respondText(SERVER_IDENT)
@@ -34,7 +37,12 @@ class KtorServer<TEngine : ApplicationEngine, TConfiguration : ApplicationEngine
     }
 
     override fun start() {
-        Log.info { "Starting server" }
-        http.start(wait = false)
+        Log.info(tag = TAG) { "Starting" }
+        server.start(wait = false)
+    }
+
+    override fun stop() {
+        Log.info(tag = TAG) { "Stopping" }
+        server.stop()
     }
 }
