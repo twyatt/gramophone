@@ -1,13 +1,13 @@
-package com.traviswyatt.qd.features.dictate
+package com.traviswyatt.gramophone.features.dictate
 
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
-import com.traviswyatt.qd.Commander
-import com.traviswyatt.qd.Dictation
-import com.traviswyatt.qd.HostFinder
-import com.traviswyatt.qd.client
-import com.traviswyatt.qd.settings
-import com.traviswyatt.qd.transcript
+import com.traviswyatt.gramophone.Commander
+import com.traviswyatt.gramophone.Dictation
+import com.traviswyatt.gramophone.HostFinder
+import com.traviswyatt.gramophone.client
+import com.traviswyatt.gramophone.settings
+import com.traviswyatt.gramophone.transcript
 import dev.icerock.moko.permissions.DeniedAlwaysException
 import dev.icerock.moko.permissions.DeniedException
 import dev.icerock.moko.permissions.Permission

@@ -12,7 +12,7 @@ kotlin {
     iosArm64 {
         binaries.framework {
             baseName = "ComposeApp"
-            binaryOption("bundleId", "com.traviswyatt.qd")
+            binaryOption("bundleId", "com.traviswyatt.gramophone")
             binaryOption("bundleShortVersionString", "0.0.1")
             binaryOption("bundleVersion", "1")
         }
@@ -53,7 +53,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.traviswyatt.qd"
+    namespace = "com.traviswyatt.gramophone"
     compileSdk = libs.versions.android.compile.get().toInt()
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
@@ -61,7 +61,7 @@ android {
     sourceSets["main"].resources.srcDirs("src/commonMain/resources")
 
     defaultConfig {
-        applicationId = "com.traviswyatt.qd"
+        applicationId = "com.traviswyatt.gramophone"
         minSdk = libs.versions.android.min.get().toInt()
         targetSdk = libs.versions.android.target.get().toInt()
         versionCode = 1

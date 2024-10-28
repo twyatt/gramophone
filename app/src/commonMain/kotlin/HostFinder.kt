@@ -1,9 +1,9 @@
-package com.traviswyatt.qd
+package com.traviswyatt.gramophone
 
 import com.benasher44.uuid.uuidFrom
 import com.juul.kable.Scanner
 import com.juul.khronicle.Log
-import com.traviswyatt.qd.bluetooth.ServiceUuid
+import com.traviswyatt.gramophone.bluetooth.ServiceUuid
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull

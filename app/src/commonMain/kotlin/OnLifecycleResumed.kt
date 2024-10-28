@@ -1,4 +1,4 @@
-package com.traviswyatt.qd
+package com.traviswyatt.gramophone
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect

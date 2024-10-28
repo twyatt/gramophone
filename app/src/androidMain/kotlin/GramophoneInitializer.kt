@@ -1,4 +1,4 @@
-package com.traviswyatt.qd
+package com.traviswyatt.gramophone
 
 import android.content.Context
 import androidx.startup.Initializer

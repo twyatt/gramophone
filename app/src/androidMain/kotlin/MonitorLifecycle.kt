@@ -1,4 +1,4 @@
-package com.traviswyatt.qd
+package com.traviswyatt.gramophone
 
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner

@@ -36,7 +36,7 @@
             >
 
             <meta-data
-                android:name="com.traviswyatt.qd.QdInitializer"
+                android:name="com.traviswyatt.gramophone.GramophoneInitializer"
                 android:value="androidx.startup"
                 />
         </provider>

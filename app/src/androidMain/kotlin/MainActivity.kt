@@ -1,4 +1,4 @@
-package com.traviswyatt.qd
+package com.traviswyatt.gramophone
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -9,7 +9,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.juul.khronicle.Log
-import com.traviswyatt.qd.bluetooth.Advertiser
+import com.traviswyatt.gramophone.bluetooth.Advertiser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope

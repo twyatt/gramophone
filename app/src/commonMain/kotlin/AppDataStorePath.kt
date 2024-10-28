@@ -1,4 +1,4 @@
-package com.traviswyatt.qd
+package com.traviswyatt.gramophone
 
 internal const val appDataStoreFilename = "app.preferences_pb"
 

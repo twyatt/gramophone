@@ -1,4 +1,4 @@
-package com.traviswyatt.qd.features.dictate
+package com.traviswyatt.gramophone.features.dictate
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -28,11 +28,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.model.rememberScreenModel
 import cafe.adriel.voyager.core.screen.Screen
-import com.traviswyatt.qd.AppTheme
-import com.traviswyatt.qd.HostFinder
-import com.traviswyatt.qd.features.components.ActionRequired
-import com.traviswyatt.qd.onLifecycleResumed
-import com.traviswyatt.qd.transcript
+import com.traviswyatt.gramophone.AppTheme
+import com.traviswyatt.gramophone.HostFinder
+import com.traviswyatt.gramophone.features.components.ActionRequired
+import com.traviswyatt.gramophone.onLifecycleResumed
+import com.traviswyatt.gramophone.transcript
 import dev.icerock.moko.permissions.PermissionState
 import dev.icerock.moko.permissions.PermissionState.Denied
 import dev.icerock.moko.permissions.PermissionState.DeniedAlways

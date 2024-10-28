@@ -1,4 +1,4 @@
-package com.traviswyatt.qd
+package com.traviswyatt.gramophone
 
 internal actual val appDataStorePath: String
     get() = applicationContext

@@ -1,4 +1,4 @@
-package com.traviswyatt.qd
+package com.traviswyatt.gramophone
 
 import kotlin.time.Duration.Companion.minutes
 import kotlinx.coroutines.CoroutineScope

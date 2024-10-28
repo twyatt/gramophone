@@ -1,4 +1,4 @@
-package com.traviswyatt.qd.bluetooth
+package com.traviswyatt.gramophone.bluetooth
 
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.le.AdvertiseCallback

@@ -1,4 +1,4 @@
-package com.traviswyatt.qd
+package com.traviswyatt.gramophone
 
 import com.juul.khronicle.Log
 import kotlin.time.Duration.Companion.seconds

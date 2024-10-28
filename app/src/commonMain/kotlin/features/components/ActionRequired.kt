@@ -1,4 +1,4 @@
-package com.traviswyatt.qd.features.components
+package com.traviswyatt.gramophone.features.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

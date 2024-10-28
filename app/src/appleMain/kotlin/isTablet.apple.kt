@@ -1,3 +1,3 @@
-package com.traviswyatt.qd
+package com.traviswyatt.gramophone
 
 actual val isTablet = false
