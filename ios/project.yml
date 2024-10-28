@@ -13,10 +13,16 @@ targets:
       MARKETING_VERSION: 1
       CURRENT_PROJECT_VERSION: 1
       GENERATE_INFOPLIST_FILE: YES
+    resources:
+      - path: Resources/Assets.xcassets
     info:
       path: Info.plist
       properties:
         CFBundleDisplayName: "Gramophone"
+        CFBundleIcons:
+          CFBundlePrimaryIcon:
+            CFBundleIconFiles:
+              - AppIcon
         UILaunchScreen:
           UIColorName: black
         NSMicrophoneUsageDescription: Uses microphone for dictation (speech-to-text).
