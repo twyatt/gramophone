@@ -1,11 +1,11 @@
 name: Gramophone
 options:
-  bundleIdPrefix: com.traviswyatt.gramophone
+  bundleIdPrefix: com.traviswyatt
   usesTabs: false
   indentWidth: 4
   defaultConfig: Debug
 targets:
-  iOS:
+  Gramophone:
     type: application
     platform: iOS
     deploymentTarget: "15.0"
@@ -13,6 +13,7 @@ targets:
       MARKETING_VERSION: 1
       CURRENT_PROJECT_VERSION: 1
       GENERATE_INFOPLIST_FILE: YES
+      PRODUCT_BUNDLE_IDENTIFIER: com.traviswyatt.gramophone
     resources:
       - path: Resources/Assets.xcassets
     info:

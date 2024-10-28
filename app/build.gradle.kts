@@ -12,7 +12,7 @@ kotlin {
     iosArm64 {
         binaries.framework {
             baseName = "ComposeApp"
-            binaryOption("bundleId", "com.traviswyatt.gramophone")
+            binaryOption("bundleId", "com.traviswyatt.gramophone.compose")
             binaryOption("bundleShortVersionString", "0.0.1")
             binaryOption("bundleVersion", "1")
         }
