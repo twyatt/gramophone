@@ -2,7 +2,7 @@ tasks.register<Delete>("clean") {
     group = "Project Setup"
     description = "Delete Xcode project created with xcodegen"
     delete(
-        "$projectDir/QuickDictate.xcodeproj/",
+        "$projectDir/Gramophone.xcodeproj/",
         "$projectDir/Info.plist",
     )
 }
@@ -24,5 +24,5 @@ tasks.register<Exec>("openXcode") {
     group = "Project Setup"
     description = "Open Xcode project"
     dependsOn("generateXcodeProject")
-    commandLine("open", "QuickDictate.xcodeproj")
+    commandLine("open", "Gramophone.xcodeproj")
 }

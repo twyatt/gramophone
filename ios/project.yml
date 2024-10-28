@@ -1,6 +1,6 @@
-name: QuickDictate
+name: Gramophone
 options:
-  bundleIdPrefix: com.traviswyatt.qd
+  bundleIdPrefix: com.traviswyatt.gramophone
   usesTabs: false
   indentWidth: 4
   defaultConfig: Debug
@@ -16,7 +16,7 @@ targets:
     info:
       path: Info.plist
       properties:
-        CFBundleDisplayName: "QuickDictate"
+        CFBundleDisplayName: "Gramophone"
         UILaunchScreen:
           UIColorName: black
         NSMicrophoneUsageDescription: Uses microphone for dictation (speech-to-text).
