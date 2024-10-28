@@ -31,8 +31,8 @@ object HostFinder {
             val ip = withTimeoutOrNull(ScanTimeout) {
                 scanner
                     .advertisements
-                    .onEach {
-                        Log.verbose(tag = TAG) { "Advertisement: $it" }
+                    .onEach { advertisement ->
+                        Log.verbose(tag = TAG) { "Advertisement: $advertisement" }
                     }
                     .map { it.serviceData(uuidFrom(ServiceUuid)) }
                     .filterNotNull()
