@@ -39,8 +39,12 @@ targets:
           - UIInterfaceOrientationPortraitUpsideDown
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
-        NSMicrophoneUsageDescription: Uses microphone for dictation (speech-to-text).
         NSBluetoothAlwaysUsageDescription: Uses bluetooth for finding dictation host.
+        NSContactsUsageDescription: Needed by dependency.
+        NSLocationWhenInUseUsageDescription: Needed by dependency.
+        NSMicrophoneUsageDescription: Uses microphone for dictation (speech-to-text).
+        NSMotionUsageDescription: Needed by dependency.
+        NSSpeechRecognitionUsageDescription: Uses speech recognition for dictation.
     sources:
       - path: Sources
         buildPhase: sources
