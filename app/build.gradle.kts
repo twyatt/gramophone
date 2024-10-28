@@ -12,9 +12,12 @@ kotlin {
     iosArm64 {
         binaries.framework {
             baseName = "ComposeApp"
-            binaryOption("bundleId", "com.traviswyatt.gramophone.compose")
-            binaryOption("bundleShortVersionString", "0.0.1")
-            binaryOption("bundleVersion", "1")
+        }
+    }
+
+    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
+        binaries.withType<org.jetbrains.kotlin.gradle.plugin.mpp.Framework> {
+            isStatic = true
         }
     }
 

@@ -10,6 +10,12 @@ targets:
     platform: iOS
     deploymentTarget: "15.0"
     settings:
+      OTHER_LDFLAGS: "$(inherited) -framework ComposeApp"
+      FRAMEWORK_SEARCH_PATHS: "$(SRCROOT)/../app/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)"
+      ENABLE_BITCODE: "YES"
+      ONLY_ACTIVE_ARCH: "NO"
+      VALID_ARCHS: "arm64"
+      DEBUG_INFORMATION_FORMAT: dwarf-with-dsym
       MARKETING_VERSION: 1
       CURRENT_PROJECT_VERSION: 1
       GENERATE_INFOPLIST_FILE: YES
@@ -40,5 +46,7 @@ targets:
         buildPhase: sources
       - path: Resources
         buildPhase: resources
-    dependencies:
-      - framework: ../app/build/bin/iosArm64/releaseFramework/ComposeApp.framework
+    preBuildScripts:
+      - script: |
+          cd "$SRCROOT/.."
+          ./gradlew :app:embedAndSignAppleFrameworkForXcode
