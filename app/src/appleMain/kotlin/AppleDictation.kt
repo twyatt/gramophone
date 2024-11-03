@@ -39,13 +39,15 @@ class AppleDictation(
     private val task = MutableStateFlow<SFSpeechRecognitionTask?>(null)
     override val isDictating = task.map { it != null }
 
+    private fun isDictating() = task.value != null
+
     private val recognizer = SFSpeechRecognizer(NSLocale.currentLocale).apply {
         delegate = object : NSObject(), SFSpeechRecognizerDelegateProtocol {
             override fun speechRecognizer(
                 speechRecognizer: SFSpeechRecognizer,
                 availabilityDidChange: Boolean
             ) {
-                Log.info { "SFSpeechRecognizer availabilityDidChange: $availabilityDidChange" }
+                Log.info(tag = TAG) { "SFSpeechRecognizer availabilityDidChange: $availabilityDidChange" }
                 isAvailable.value = availabilityDidChange
             }
         }
@@ -54,19 +56,34 @@ class AppleDictation(
     private val engine = AVAudioEngine()
 
     override fun start() {
+        Log.debug(tag = TAG) { "Start" }
+        if (isDictating()) {
+            Log.debug(tag = TAG) { "Abort" }
+            return
+        }
+
         @OptIn(FlowPreview::class)
         val job = scope.launch(start = LAZY) {
             transcript.timeout(SpeechTimeout).catch {
-                if (it is TimeoutCancellationException) task.value?.cancel()
+                if (it is TimeoutCancellationException) {
+                    Log.verbose(tag = TAG) { "Timeout" }
+                    stop()
+                }
             }.collect {}
+        }.apply {
+            invokeOnCompletion { cause ->
+                Log.verbose(tag = TAG) { "Timeout watch stopped: $cause" }
+            }
         }
 
+        Log.verbose(tag = TAG) { "Request" }
         val request = SFSpeechAudioBufferRecognitionRequest().apply {
             addsPunctuation = false
             shouldReportPartialResults = true
             taskHint = SFSpeechRecognitionTaskHintDictation
         }
 
+        Log.verbose(tag = TAG) { "Configure task" }
         var lastTranscription: String? = null
         task.value = recognizer.recognitionTaskWithRequest(request) { result, error ->
             val transcription = result?.bestTranscription?.formattedString?.takeUnless { it.isEmpty() }
@@ -76,12 +93,18 @@ class AppleDictation(
             }
             val isFinal = result?.final == true
 
-            Log.verbose {
+            Log.verbose(tag = TAG) {
                 "transcription: $transcription, isFinal: $isFinal"
             }
 
-            if (error != null || isFinal) {
-                Log.verbose { "Cancel" }
+            if (error != null) {
+                Log.error(tag = TAG) { "Error: $error" }
+                job.cancel()
+                stop()
+            }
+
+            if (isFinal) {
+                Log.verbose(tag = TAG) { "Cancel error: $error" }
                 job.cancel()
                 engine.stop()
                 engine.inputNode.removeTapOnBus(0u)
@@ -95,6 +118,7 @@ class AppleDictation(
             }
         }
 
+        Log.verbose(tag = TAG) { "engine.installTapOnBus" }
         engine.inputNode.installTapOnBus(
             0u,
             1024u,
@@ -103,21 +127,20 @@ class AppleDictation(
             request.appendAudioPCMBuffer(buffer!!)
         }
 
+        Log.verbose(tag = TAG) { "engine.prepare" }
         engine.prepare()
 
+        Log.verbose(tag = TAG) { "engine.startAndReturnError" }
         @OptIn(ExperimentalForeignApi::class)
         engine.startAndReturnError(null)
     }
 
-    override fun toggle() {
-        if (task.value != null) {
-            cancel()
-        } else {
-            start()
-        }
+    private fun stop() {
+        Log.debug(tag = TAG) { "Stop" }
+        task.value?.cancel()
     }
 
     override fun cancel() {
-        task.value?.cancel()
+        task.value?.finish()
     }
 }

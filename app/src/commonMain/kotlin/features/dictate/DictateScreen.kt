@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
@@ -17,9 +18,11 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -130,37 +133,36 @@ private fun Transcription(screenModel: DictateScreenModel) {
     val isDictating by screenModel.dictation.isDictating.collectAsState(false)
     val transcript by transcript.collectAsState("")
 
-    Box {
-        val border = if (isDictating) Color.Green else Color.Transparent
+    val border = if (isDictating) Color.Green else Color.Transparent
+    val fontSize = screenModel.fontSize.collectAsState()
+    val lineHeight = derivedStateOf { (fontSize.value * 1.1f).toInt() }
+    val transformState = rememberTransformableState { zoomChange, _, _ ->
+        screenModel.onZoomChange(zoomChange)
+    }
 
-        val fontSize = screenModel.fontSize.collectAsState()
-        val lineHeight = derivedStateOf { (fontSize.value * 1.1f).toInt() }
-        val transformState = rememberTransformableState { zoomChange, panChange, rotationChange ->
-            screenModel.onZoomChange(zoomChange)
+    val interactionSource = remember { MutableInteractionSource() }
+    LaunchedEffect(interactionSource) {
+        interactionSource.interactions.collect {
+            screenModel.onInteraction(it)
         }
+    }
 
-        Box(
-            Modifier
-                .border(15.dp, border)
-                .padding(15.dp)
-                .fillMaxSize()
-                .transformable(transformState)
-                .clickable {
-                    screenModel.toggleDictation()
-                }
-        ) {
-            val message = if (isAvailable) {
-                transcript
-            } else {
-                "⚠️ Dictation unavailable."
+    Box(
+        Modifier
+            .border(15.dp, border)
+            .padding(15.dp)
+            .fillMaxSize()
+            .transformable(transformState)
+            .clickable(interactionSource, null) {
+                screenModel.onClick()
             }
-            Text(message, fontSize = fontSize.value.toInt().sp, lineHeight = lineHeight.value.sp, fontWeight = FontWeight.Bold)
+    ) {
+        val message = if (isAvailable) {
+            transcript
+        } else {
+            "⚠️ Dictation unavailable."
         }
-
-//        val isSearching by hostFinder.isSearching.collectAsState()
-//        if (isSearching) {
-//            CircularProgressIndicator(Modifier.align(TopEnd).padding(5.dp))
-//        }
+        Text(message, fontSize = fontSize.value.toInt().sp, lineHeight = lineHeight.value.sp, fontWeight = FontWeight.Bold)
     }
 }
 

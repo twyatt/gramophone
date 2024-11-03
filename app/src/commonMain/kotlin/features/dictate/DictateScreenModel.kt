@@ -1,11 +1,19 @@
 package com.traviswyatt.gramophone.features.dictate
 
+import androidx.compose.foundation.interaction.Interaction
+import androidx.compose.foundation.interaction.PressInteraction.Cancel
+import androidx.compose.foundation.interaction.PressInteraction.Press
+import androidx.compose.foundation.interaction.PressInteraction.Release
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
+import com.juul.khronicle.Log
 import com.traviswyatt.gramophone.Commander
 import com.traviswyatt.gramophone.Dictation
 import com.traviswyatt.gramophone.HostFinder
+import com.traviswyatt.gramophone.OperatingSystem.Android
+import com.traviswyatt.gramophone.OperatingSystem.iOS
 import com.traviswyatt.gramophone.client
+import com.traviswyatt.gramophone.os
 import com.traviswyatt.gramophone.settings
 import com.traviswyatt.gramophone.transcript
 import dev.icerock.moko.permissions.DeniedAlwaysException
@@ -130,18 +138,6 @@ class DictateScreenModel(val permissionsController: PermissionsController) : Scr
         }
     }
 
-    private suspend fun startDictation() {
-        transcript.value = ""
-        if (recordPermissionState.value == Granted) {
-            dictation.start()
-        } else {
-            requestAndUpdateRecordPermission()
-            if (recordPermissionState.value == Granted) {
-                dictation.start()
-            }
-        }
-    }
-
     private suspend fun requestAndUpdateRecordPermission() {
         // Once we've been granted permission we no longer need to request permission. Apple and
         // Android will kill the app if permissions are revoked.
@@ -173,6 +169,22 @@ class DictateScreenModel(val permissionsController: PermissionsController) : Scr
         bluetoothPermissionState.value = permissionsController.requestPermission(BLUETOOTH_SCAN)
     }
 
+    fun onClick() {
+        if (os == iOS) return // On iOS, dictation toggling is handled via `onInteraction`.
+        screenModelScope.launch {
+            toggleDictation()
+        }
+    }
+
+    fun onInteraction(interaction: Interaction) {
+        if (os == Android) return // On Android, dictation toggling is handled via `onClick`.
+        Log.info { "interaction: $interaction" }
+        when (interaction) {
+            is Press -> startDictation()
+            is Release, is Cancel -> stopDictation()
+        }
+    }
+
     fun onZoomChange(zoomChange: Float) {
         _fontSize.update { previous ->
             (previous * zoomChange).coerceIn(FontSizeRange)
@@ -180,6 +192,32 @@ class DictateScreenModel(val permissionsController: PermissionsController) : Scr
     }
 
     override fun onDispose() {
+        stopDictation()
+    }
+
+    private suspend fun toggleDictation() {
+        val isDictating = dictation.isDictating.first()
+        when (isDictating) {
+            true -> stopDictation()
+            false -> startDictation()
+        }
+    }
+
+    private fun startDictation() {
+        transcript.value = ""
+        if (recordPermissionState.value == Granted) {
+            dictation.start()
+        } else {
+            screenModelScope.launch {
+                requestAndUpdateRecordPermission()
+                if (recordPermissionState.value == Granted) {
+                    dictation.start()
+                }
+            }
+        }
+    }
+
+    private fun stopDictation() {
         dictation.cancel()
     }
 }
