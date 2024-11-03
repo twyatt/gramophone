@@ -22,10 +22,12 @@ import platform.Speech.SFSpeechRecognizer
 import platform.Speech.SFSpeechRecognizerDelegateProtocol
 import platform.darwin.NSObject
 
+private const val TAG = "AppleDictation"
+
 /**
  * How long after the last transcription was received to consider speaking complete.
  *
- * This should be long enough to not timeout while someone is speaking a long work, but not too long
+ * This should be long enough to not timeout while someone is speaking a long word, but not too long
  * that it feels like a long delay after someone is done speaking.
  */
 private val SpeechTimeout = 5.seconds
@@ -45,7 +47,7 @@ class AppleDictation(
                 speechRecognizer: SFSpeechRecognizer,
                 availabilityDidChange: Boolean
             ) {
-                Log.info { "SFSpeechRecognizer availabilityDidChange: $availabilityDidChange" }
+                Log.info(tag = TAG) { "SFSpeechRecognizer availabilityDidChange: $availabilityDidChange" }
                 isAvailable.value = availabilityDidChange
             }
         }
@@ -76,12 +78,12 @@ class AppleDictation(
             }
             val isFinal = result?.final == true
 
-            Log.verbose {
+            Log.verbose(tag = TAG) {
                 "transcription: $transcription, isFinal: $isFinal"
             }
 
             if (error != null || isFinal) {
-                Log.verbose { "Cancel" }
+                Log.verbose(tag = TAG) { "Cancel" }
                 job.cancel()
                 engine.stop()
                 engine.inputNode.removeTapOnBus(0u)
@@ -107,14 +109,6 @@ class AppleDictation(
 
         @OptIn(ExperimentalForeignApi::class)
         engine.startAndReturnError(null)
-    }
-
-    override fun toggle() {
-        if (task.value != null) {
-            cancel()
-        } else {
-            start()
-        }
     }
 
     override fun cancel() {

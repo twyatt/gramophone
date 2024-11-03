@@ -8,7 +8,6 @@ interface Dictation {
     val isAvailable: StateFlow<Boolean>
     val isDictating: Flow<Boolean>
     fun start()
-    fun toggle()
     fun cancel()
 }
 

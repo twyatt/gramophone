@@ -65,14 +65,6 @@ class AndroidDictation(private val commander: Commander) : Dictation {
         recognizer.startListening(intent)
     }
 
-    override fun toggle() {
-        if (_isDictating.value) {
-            cancel()
-        } else {
-            start()
-        }
-    }
-
     override fun cancel() {
         recognizer.cancel()
     }

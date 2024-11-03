@@ -46,10 +46,13 @@ class DictateScreenModel(val permissionsController: PermissionsController) : Scr
     private val _fontSize = MutableStateFlow(DefaultFontSize)
     val fontSize = _fontSize.asStateFlow()
 
+    private val transmissionEnabled = MutableStateFlow(true)
+
     val needsHost = combine(
         settings.isHost.map { !it },
         settings.host,
-    ) { isClient, host -> isClient && host == null }
+        transmissionEnabled,
+    ) { isClient, host, transmissionEnabled -> isClient && host == null && transmissionEnabled }
         .distinctUntilChanged()
 
     init {
@@ -151,6 +154,10 @@ class DictateScreenModel(val permissionsController: PermissionsController) : Scr
         recordPermissionState.value = permissionsController.requestPermission(RECORD_AUDIO)
     }
 
+    fun disableTransmission() {
+        transmissionEnabled.value = false
+    }
+
     fun findHost() {
         screenModelScope.launch {
             if (bluetoothPermissionState.value == Granted) {
@@ -164,7 +171,7 @@ class DictateScreenModel(val permissionsController: PermissionsController) : Scr
         }
     }
 
-    suspend fun requestAndUpdateBluetoothPermission() {
+    private suspend fun requestAndUpdateBluetoothPermission() {
         // Once we've been granted permission we no longer need to request permission. Apple and
         // Android will kill the app if permissions are revoked.
         if (bluetoothPermissionState.value == Granted) return

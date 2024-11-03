@@ -57,7 +57,7 @@ class DictateScreen : Screen {
                 } else {
                     val needsHost by screenModel.needsHost.collectAsState(false)
                     if (needsHost) {
-                        NeedsHost(screenModel::findHost)
+                        NeedsHost(screenModel::disableTransmission, screenModel::findHost)
                     } else {
                         val bluetoothPermissionState by screenModel.bluetoothPermissionState.collectAsState()
                         if (bluetoothPermissionState.canRequestPermission == false) {
@@ -89,14 +89,23 @@ class DictateScreen : Screen {
 }
 
 @Composable
-private fun BoxScope.NeedsHost(onClick: () -> Unit) {
+private fun BoxScope.NeedsHost(
+    onSkipClick: () -> Unit,
+    onSearchClick: () -> Unit,
+) {
+    Button(
+        modifier = Modifier.align(Alignment.TopEnd),
+        onClick = onSkipClick,
+        content = { Text("Skip") },
+    )
+
     Column(
         Modifier.align(Alignment.Center),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text("Not associated with host.")
         Button(
-            onClick = onClick,
+            onClick = onSearchClick,
             content = { Text("Search") },
         )
     }
@@ -130,37 +139,30 @@ private fun Transcription(screenModel: DictateScreenModel) {
     val isDictating by screenModel.dictation.isDictating.collectAsState(false)
     val transcript by transcript.collectAsState("")
 
-    Box {
-        val border = if (isDictating) Color.Green else Color.Transparent
+    val border = if (isDictating) Color.Green else Color.Transparent
 
-        val fontSize = screenModel.fontSize.collectAsState()
-        val lineHeight = derivedStateOf { (fontSize.value * 1.1f).toInt() }
-        val transformState = rememberTransformableState { zoomChange, panChange, rotationChange ->
-            screenModel.onZoomChange(zoomChange)
-        }
+    val fontSize = screenModel.fontSize.collectAsState()
+    val lineHeight = derivedStateOf { (fontSize.value * 1.1f).toInt() }
+    val transformState = rememberTransformableState { zoomChange, _, _ ->
+        screenModel.onZoomChange(zoomChange)
+    }
 
-        Box(
-            Modifier
-                .border(15.dp, border)
-                .padding(15.dp)
-                .fillMaxSize()
-                .transformable(transformState)
-                .clickable {
-                    screenModel.toggleDictation()
-                }
-        ) {
-            val message = if (isAvailable) {
-                transcript
-            } else {
-                "⚠️ Dictation unavailable."
+    Box(
+        Modifier
+            .border(15.dp, border)
+            .padding(15.dp)
+            .fillMaxSize()
+            .transformable(transformState)
+            .clickable {
+                screenModel.toggleDictation()
             }
-            Text(message, fontSize = fontSize.value.toInt().sp, lineHeight = lineHeight.value.sp, fontWeight = FontWeight.Bold)
+    ) {
+        val message = if (isAvailable) {
+            transcript
+        } else {
+            "⚠️ Dictation unavailable."
         }
-
-//        val isSearching by hostFinder.isSearching.collectAsState()
-//        if (isSearching) {
-//            CircularProgressIndicator(Modifier.align(TopEnd).padding(5.dp))
-//        }
+        Text(message, fontSize = fontSize.value.toInt().sp, lineHeight = lineHeight.value.sp, fontWeight = FontWeight.Bold)
     }
 }
 
