@@ -13,6 +13,8 @@
         android:label="Gramophone"
         android:theme="@android:style/Theme.Material.NoActionBar"
         android:networkSecurityConfig="@xml/network_security_config"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
         >
 
         <activity
