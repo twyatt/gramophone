@@ -6,6 +6,7 @@ import com.traviswyatt.gramophone.Commander
 import com.traviswyatt.gramophone.Dictation
 import com.traviswyatt.gramophone.HostFinder
 import com.traviswyatt.gramophone.client
+import com.traviswyatt.gramophone.isTablet
 import com.traviswyatt.gramophone.settings
 import com.traviswyatt.gramophone.transcript
 import dev.icerock.moko.permissions.DeniedAlwaysException
@@ -34,7 +35,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 private val FontSizeRange = 6f..240f
-private const val DefaultFontSize = 96f // sp
+private val DefaultFontSize = if (isTablet) 96f else 32f // sp
 
 class DictateScreenModel(val permissionsController: PermissionsController) : ScreenModel {
 
