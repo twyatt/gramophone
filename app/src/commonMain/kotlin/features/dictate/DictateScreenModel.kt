@@ -84,7 +84,9 @@ class DictateScreenModel(val permissionsController: PermissionsController) : Scr
      * screen where user may have granted needed permissions).
      */
     fun onResumed() {
-        transcript.compareAndSet("", "Welcome back!")
+        if (settings.isHost.value) {
+            transcript.compareAndSet("", "Welcome back!")
+        }
 
         screenModelScope.launch {
             when (isRequestingRecordPermission.value) {
@@ -124,6 +126,7 @@ class DictateScreenModel(val permissionsController: PermissionsController) : Scr
     }
 
     fun toggleDictation() {
+        settings.hideInstructions()
         screenModelScope.launch {
             if (dictation.isDictating.first()) {
                 dictation.cancel()

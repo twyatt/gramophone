@@ -17,13 +17,17 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Center
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.model.rememberScreenModel
@@ -32,6 +36,7 @@ import com.traviswyatt.gramophone.AppTheme
 import com.traviswyatt.gramophone.HostFinder
 import com.traviswyatt.gramophone.features.components.ActionRequired
 import com.traviswyatt.gramophone.onLifecycleResumed
+import com.traviswyatt.gramophone.settings
 import com.traviswyatt.gramophone.transcript
 import dev.icerock.moko.permissions.PermissionState
 import dev.icerock.moko.permissions.PermissionState.Denied
@@ -53,7 +58,7 @@ class DictateScreen : Screen {
             Box(Modifier.background(color = MaterialTheme.colors.background).fillMaxSize()) {
                 val isSearchingForHost by HostFinder.isRunning.collectAsState()
                 if (isSearchingForHost) {
-                    CircularProgressIndicator(Modifier.align(Alignment.Center))
+                    SearchingForHost(Modifier.align(Center))
                 } else {
                     val needsHost by screenModel.needsHost.collectAsState(false)
                     if (needsHost) {
@@ -89,6 +94,17 @@ class DictateScreen : Screen {
 }
 
 @Composable
+private fun SearchingForHost(modifier: Modifier = Modifier) {
+    Column(
+        modifier,
+        horizontalAlignment = CenterHorizontally,
+    ) {
+        Text("Searching for host...")
+        CircularProgressIndicator()
+    }
+}
+
+@Composable
 private fun BoxScope.NeedsHost(
     onSkipClick: () -> Unit,
     onSearchClick: () -> Unit,
@@ -100,7 +116,7 @@ private fun BoxScope.NeedsHost(
     )
 
     Column(
-        Modifier.align(Alignment.Center),
+        Modifier.align(Center),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text("Not associated with host.")
@@ -137,7 +153,7 @@ private fun BluetoothPermissionsDenied(onShowAppSettingsClick: () -> Unit) {
 private fun Transcription(screenModel: DictateScreenModel) {
     val isAvailable by screenModel.dictation.isAvailable.collectAsState()
     val isDictating by screenModel.dictation.isDictating.collectAsState(false)
-    val transcript by transcript.collectAsState("")
+    val transcript by transcript.collectAsState()
 
     val border = if (isDictating) Color.Green else Color.Transparent
 
@@ -157,12 +173,32 @@ private fun Transcription(screenModel: DictateScreenModel) {
                 screenModel.toggleDictation()
             }
     ) {
-        val message = if (isAvailable) {
-            transcript
+        val isHost by settings.isHost.collectAsState()
+        val showInstructions by settings.showInstructions.collectAsState()
+        if (showInstructions && !isHost) {
+            Instructions(fontSize, lineHeight)
         } else {
-            "⚠️ Dictation unavailable."
+            val message = if (isAvailable) transcript else "⚠️ Dictation unavailable."
+            Text(message, fontSize = fontSize.value.toInt().sp, lineHeight = lineHeight.value.sp, fontWeight = FontWeight.Bold)
         }
-        Text(message, fontSize = fontSize.value.toInt().sp, lineHeight = lineHeight.value.sp, fontWeight = FontWeight.Bold)
+    }
+}
+
+@Composable
+private fun Instructions(
+    fontSize: State<Float>,
+    lineHeight: State<Int>
+) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Center,
+    ) {
+        Text(
+            textAlign = TextAlign.Center,
+            fontSize = fontSize.value.toInt().sp,
+            lineHeight = lineHeight.value.sp,
+            text = "Tap screen to start dictation.\nGreen border is shown while recording dictation.\nPinch screen to change font size."
+        )
     }
 }
 
