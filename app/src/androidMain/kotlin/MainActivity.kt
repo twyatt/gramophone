@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {
         GlobalScope.configureAdvertising()
         GlobalScope.configureWakeLock()
         init()
-        setFullscreen()
+//        setFullscreen()
 
         setContent {
             App()
@@ -68,7 +68,6 @@ class MainActivity : ComponentActivity() {
             WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
     }
-
 }
 
 private fun CoroutineScope.configureServer() {
