@@ -39,6 +39,7 @@ targets:
           - UIInterfaceOrientationPortraitUpsideDown
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
+        ITSAppUsesNonExemptEncryption: NO
         NSBluetoothAlwaysUsageDescription: Uses bluetooth for finding dictation host.
         NSContactsUsageDescription: Needed by dependency.
         NSLocationWhenInUseUsageDescription: Needed by dependency.
