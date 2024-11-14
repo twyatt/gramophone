@@ -12,6 +12,7 @@ import com.traviswyatt.gramophone.transcript
 import dev.icerock.moko.permissions.DeniedAlwaysException
 import dev.icerock.moko.permissions.DeniedException
 import dev.icerock.moko.permissions.Permission
+import dev.icerock.moko.permissions.Permission.BLUETOOTH_ADVERTISE
 import dev.icerock.moko.permissions.Permission.BLUETOOTH_SCAN
 import dev.icerock.moko.permissions.Permission.RECORD_AUDIO
 import dev.icerock.moko.permissions.PermissionState.Denied
@@ -42,7 +43,8 @@ class DictateScreenModel(val permissionsController: PermissionsController) : Scr
     val dictation = screenModelScope.Dictation(Commander(settings))
 
     val recordPermissionState = MutableStateFlow(NotDetermined)
-    val bluetoothPermissionState = MutableStateFlow(NotDetermined)
+    val bluetoothScanPermissionState = MutableStateFlow(NotDetermined)
+    val bluetoothAdvertisePermissionState = MutableStateFlow(NotDetermined)
 
     private val _fontSize = MutableStateFlow(DefaultFontSize)
     val fontSize = _fontSize.asStateFlow()
@@ -66,6 +68,14 @@ class DictateScreenModel(val permissionsController: PermissionsController) : Scr
                 settings.saveFontSize(fontSize)
             }
         }
+
+        combine(
+            settings.isHost,
+            bluetoothAdvertisePermissionState.map { it == Granted },
+            ::Pair,
+        ).onEach { (isHost, isGranted) ->
+            if (isHost && !isGranted) requestAndUpdateBluetoothAdvertisePermission()
+        }.launchIn(screenModelScope)
 
         dictation.isDictating
             .filter { it }
@@ -111,7 +121,7 @@ class DictateScreenModel(val permissionsController: PermissionsController) : Scr
                 // "is requesting" state here.
                 true -> isRequestingBluetoothPermission.value = false
 
-                false -> requestAndUpdateBluetoothPermission()
+                false -> requestAndUpdateBluetoothScanPermission()
 
                 // On Apple (until authorized) even checking the permission state will show a
                 // permission dialog. We guard against showing the dialog prior to actually wanting
@@ -164,24 +174,33 @@ class DictateScreenModel(val permissionsController: PermissionsController) : Scr
 
     fun findHost() {
         screenModelScope.launch {
-            if (bluetoothPermissionState.value == Granted) {
+            if (bluetoothScanPermissionState.value == Granted) {
                 HostFinder.run()
             } else {
-                requestAndUpdateBluetoothPermission()
-                if (bluetoothPermissionState.value == Granted) {
+                requestAndUpdateBluetoothScanPermission()
+                if (bluetoothScanPermissionState.value == Granted) {
                     HostFinder.run()
                 }
             }
         }
     }
 
-    private suspend fun requestAndUpdateBluetoothPermission() {
+    private suspend fun requestAndUpdateBluetoothScanPermission() {
         // Once we've been granted permission we no longer need to request permission. Apple and
         // Android will kill the app if permissions are revoked.
-        if (bluetoothPermissionState.value == Granted) return
+        if (bluetoothScanPermissionState.value == Granted) return
 
         isRequestingBluetoothPermission.value = true
-        bluetoothPermissionState.value = permissionsController.requestPermission(BLUETOOTH_SCAN)
+        bluetoothAdvertisePermissionState.value = permissionsController.requestPermission(BLUETOOTH_SCAN)
+    }
+
+    private suspend fun requestAndUpdateBluetoothAdvertisePermission() {
+        // Once we've been granted permission we no longer need to request permission. Apple and
+        // Android will kill the app if permissions are revoked.
+        if (bluetoothAdvertisePermissionState.value == Granted) return
+
+        isRequestingBluetoothPermission.value = true
+        bluetoothScanPermissionState.value = permissionsController.requestPermission(BLUETOOTH_ADVERTISE)
     }
 
     fun onZoomChange(zoomChange: Float) {
